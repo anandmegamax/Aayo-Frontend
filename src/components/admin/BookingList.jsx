@@ -19,6 +19,8 @@ const BookingList = () => {
   const [deleteBooking] = useDeleteBookingMutation();
   const bookings = data?.bookings || [];
 
+  console.log("Bookings data:", bookings);
+
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure?")) {
       try {
@@ -36,7 +38,7 @@ const BookingList = () => {
 
     return bookings.filter((b) => {
       const target =
-        `${b.user?.name} ${b.user?.email} ${b.user?.mobile} ${b.status} ${b.fromPlace} ${b.toPlace}`.toLowerCase();
+        `${b.user?.name} ${b.user?.email} ${b.user?.mobile} ${b.bookingType} ${b.status} ${b.fromPlace} ${b.toPlace}`.toLowerCase();
       return target.includes(searchTerm.toLowerCase());
     });
   }, [searchTerm, bookings]);
@@ -46,25 +48,57 @@ const BookingList = () => {
       name: "Traveler",
       selector: (row) => row.user?.name,
       sortable: true,
+      center: true,
     },
     {
       name: "Email",
       selector: (row) => row.user?.email,
       sortable: true,
+      center: true,
     },
     {
       name: "Mobile",
       selector: (row) => row.user?.mobile,
       sortable: true,
+      center: true,
+    },
+    {
+      name: "Flight Type",
+      selector: (row) => row.flightType?.name,
+      sortable: true,
+      center: true,
+    },
+    {
+      name: "Booking Type",
+      selector: (row) => row.bookingType,
+      sortable: true,
+      cell: (row) => (
+        <span
+          className={`badge bg-${
+            row.bookingType === "normal" ? "primary" : "secondary"
+          }`}
+        >
+          {row.bookingType}
+        </span>
+      ),
+      center: true,
     },
     {
       name: "From–To",
       selector: (row) => `${row.fromPlace} → ${row.toPlace}`,
+      center: true,
     },
     {
       name: "Date",
       selector: (row) => row.travelDate,
       sortable: true,
+      center: true,
+    },
+    {
+      name: "Time",
+      selector: (row) => row.travelTime,
+      sortable: true,
+      center: true,
     },
     {
       name: "Status",
@@ -81,6 +115,7 @@ const BookingList = () => {
           {row.status}
         </span>
       ),
+      center: true,
     },
     {
       name: "Actions",
@@ -133,6 +168,7 @@ const BookingList = () => {
       ignoreRowClick: true,
       allowoverflow: true,
       button: true,
+      center: true,
     },
   ];
 

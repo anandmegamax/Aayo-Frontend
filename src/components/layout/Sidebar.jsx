@@ -12,7 +12,7 @@ const Sidebar = () => {
       <div className="sidebar-logo">
         {/* <!-- Logo Header --> */}
         <div className="logo-header" data-background-color="dark">
-          <a href="index.html" className="logo">
+          <a href="/admin/dashboard" className="logo">
             <img
               src="../assets/img/logo.png"
               alt="navbar brand"
@@ -295,18 +295,6 @@ const Sidebar = () => {
                 <p>Dashboard</p>
               </Link>
             </li>
-            {hasPermission(permissions, "manage_roles") && (
-              <li className="nav-item">
-                <Link
-                  to="/admin/roles"
-                  className="collapsed"
-                  aria-expanded="false"
-                >
-                  <i className="fas fa-user"></i>
-                  <p>Manage Roles</p>
-                </Link>
-              </li>
-            )}
             {hasPermission(permissions, "manage_permissions") && (
               <li className="nav-item">
                 <Link
@@ -316,6 +304,18 @@ const Sidebar = () => {
                 >
                   <i className="fas fa-list"></i>
                   <p>Create Menu/Permissions</p>
+                </Link>
+              </li>
+            )}
+            {hasPermission(permissions, "manage_roles") && (
+              <li className="nav-item">
+                <Link
+                  to="/admin/roles"
+                  className="collapsed"
+                  aria-expanded="false"
+                >
+                  <i className="fas fa-user"></i>
+                  <p>Manage Roles</p>
                 </Link>
               </li>
             )}
@@ -331,16 +331,30 @@ const Sidebar = () => {
                 </Link>
               </li>
             )}
-            <li className="nav-item">
-              <Link
-                to="/admin/flight-types"
-                className="collapsed"
-                aria-expanded="false"
-              >
-                <i className="fas fa-plane"></i>
-                <p>Manage Flight Types</p>
-              </Link>
-            </li>
+            {hasPermission(permissions, "manage_flight_categories") && (
+              <li className="nav-item">
+                <Link
+                  to="/admin/flight-categories"
+                  className="collapsed"
+                  aria-expanded="false"
+                >
+                  <i className="fas fa-plane"></i>
+                  <p>Manage Flights Categories</p>
+                </Link>
+              </li>
+            )}
+            {hasPermission(permissions, "manage_flight_types") && (
+              <li className="nav-item">
+                <Link
+                  to="/admin/flight-types"
+                  className="collapsed"
+                  aria-expanded="false"
+                >
+                  <i className="fas fa-plane"></i>
+                  <p>Manage Flight Types</p>
+                </Link>
+              </li>
+            )}
             {hasPermission(permissions, "manage_flight") && (
               <li className="nav-item">
                 <Link
@@ -386,6 +400,18 @@ const Sidebar = () => {
                 >
                   <i className="fas fa-user"></i>
                   <p>Manage Leads</p>
+                </Link>
+              </li>
+            )}
+            {hasPermission(permissions, "manage_facilities") && (
+              <li className="nav-item">
+                <Link
+                  to="/admin/facilities"
+                  className="collapsed"
+                  aria-expanded="false"
+                >
+                  <i className="fas fa-cloud"></i>
+                  <p>Manage Facilities</p>
                 </Link>
               </li>
             )}

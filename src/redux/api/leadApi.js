@@ -58,6 +58,13 @@ export const leadApi = createApi({
                 body: data,
             }),
         }),
+        updateLead: builder.mutation({
+            query: ({ id, ...data }) => ({
+                url: `/admin/leads/${id}`,
+                method: "PUT",
+                body: data,
+            }),
+        }),
     }),
 });
 
@@ -68,5 +75,6 @@ export const {
     useConvertLeadMutation,
     useAddLeadMutation,
     useGetLeadRemarksQuery,
-    useAddLeadRemarkMutation
+    useAddLeadRemarkMutation,
+    useUpdateLeadMutation,
 } = leadApi;

@@ -17,6 +17,8 @@ import BookingList from "../admin/BookingList";
 import AddBookingForm from "../admin/AddBookingForm";
 import BookingView from "../admin/BookingView";
 import LeadList from "../admin/LeadList";
+import FacilityList from "../admin/FacilityList";
+import FlightCategoryList from "../admin/FlightCategoryList";
 
 const adminRoutes = () => {
   return (
@@ -147,6 +149,22 @@ const adminRoutes = () => {
         element={
           <ProtectedRoute>
             <LeadList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/facilities"
+        element={
+          <ProtectedRoute>
+            <FacilityList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/flight-categories"
+        element={
+          <ProtectedRoute>
+            <FlightCategoryList />
           </ProtectedRoute>
         }
       />

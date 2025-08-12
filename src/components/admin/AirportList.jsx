@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DataTable from "react-data-table-component";
 import {
   useGetAirportsQuery,
   useDeleteAirportMutation,
@@ -11,6 +12,7 @@ const AirportList = () => {
   const [deleteAirport] = useDeleteAirportMutation();
   const [editingAirport, setEditingAirport] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure?")) {
@@ -20,18 +22,117 @@ const AirportList = () => {
     }
   };
 
+  const columns = [
+    {
+      name: "Full Name",
+      selector: (row) => row.name,
+      sortable: true,
+    },
+    {
+      name: "Code",
+      selector: (row) => row.code,
+      sortable: true,
+    },
+    {
+      name: "Short Name",
+      selector: (row) => row.shortName,
+      sortable: true,
+    },
+    {
+      name: "City",
+      selector: (row) => row.city,
+      sortable: true,
+    },
+    {
+      name: "Country",
+      selector: (row) => row.country,
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div className="dropdown">
+          <button
+            className="btn btn-sm btn-secondary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Actions
+          </button>
+          <ul className="dropdown-menu">
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setEditingAirport(row);
+                  setShowForm(true);
+                }}
+              >
+                Edit
+              </button>
+            </li>
+            <li>
+              <button
+                className="dropdown-item text-danger"
+                onClick={() => handleDelete(row._id)}
+              >
+                Delete
+              </button>
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+  ];
+
+  const filteredData = data?.airports?.filter((airport) =>
+    Object.values(airport)
+      .join(" ")
+      .toLowerCase()
+      .includes(searchText.toLowerCase())
+  );
+
   return (
     <div className="container mt-4">
-      <h4>Airport Management</h4>
-      <button
-        className="btn btn-primary mb-3"
-        onClick={() => {
-          setEditingAirport(null);
-          setShowForm(true);
-        }}
-      >
-        Add Airport
-      </button>
+      {/* <h4 className="mb-3">Airport Management</h4>
+
+      <div className="d-flex justify-content-between align-items-center mb-2">
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            setEditingAirport(null);
+            setShowForm(true);
+          }}
+        >
+          Add Airport
+        </button> */}
+
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Airport Management</h2>
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            setEditingAirport(null);
+            setShowForm(!showForm);
+          }}
+        >
+          {showForm ? "Close Form" : "Add Airport"}
+        </button>
+      </div>
+
+      {/* <input
+          type="text"
+          className="form-control w-25"
+          placeholder="Search..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        /> */}
 
       {showForm && (
         <AirportForm
@@ -41,52 +142,26 @@ const AirportList = () => {
         />
       )}
 
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>Full Name</th>
-              <th>Code</th>
-              <th>Short Name</th>
-              <th>City</th>
-              <th>Country</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.airports?.map((airport) => (
-              <tr key={airport._id}>
-                <td>{airport.name}</td>
-                <td>{airport.code}</td>
-                <td>{airport.shortName}</td>
-                <td>{airport.city}</td>
-                <td>{airport.country}</td>
-                <td>{airport.status}</td>
-                <td>
-                  <button
-                    className="btn btn-warning btn-sm me-2"
-                    onClick={() => {
-                      setEditingAirport(airport);
-                      setShowForm(true);
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleDelete(airport._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <div className="mb-3">
+        <input
+          type="text"
+          placeholder="Search Airports..."
+          className="form-control"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={filteredData || []}
+        progressPending={isLoading}
+        pagination
+        highlightOnHover
+        responsive
+        noDataComponent="No airports found"
+        persistTableHead
+      />
     </div>
   );
 };

@@ -28,9 +28,10 @@ const AddUserForm = ({ onClose, refetch, user }) => {
       setForm({
         name: user.name || "",
         email: user.email || "",
-        phone: user.phone || "", // If phone is part of user object
-        password: "", // Don't prefill password for security
-        roleName: user.role || "", // If role is an object
+        phone: user.phone || "",
+        password: "",
+        roleName:
+          typeof user.role === "object" ? user.role._id : user.role || "",
       });
     }
   }, [user]);

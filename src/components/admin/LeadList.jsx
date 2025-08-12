@@ -1,3 +1,4 @@
+// components/admin/LeadList.jsx
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
 import {
@@ -6,7 +7,7 @@ import {
 } from "../../redux/api/leadApi";
 import toast from "react-hot-toast";
 import LeadRemarksModal from "./LeadRemarksModal";
-import LeadAddForm from "./LeadAddForm"; // 👈 Import Add Form
+import LeadAddForm from "./LeadAddForm";
 import ConvertToBookingModal from "./ConvertToBookingModal";
 
 const LeadList = () => {
@@ -17,11 +18,13 @@ const LeadList = () => {
     toDate: "",
   });
 
+  const [searchText, setSearchText] = useState("");
   const { data, refetch } = useGetLeadsQuery(filters);
   const [closeLead] = useCloseLeadMutation();
-  const [selectedLeadId, setSelectedLeadId] = useState(null); // For showing remarks modal
-  const [showAddForm, setShowAddForm] = useState(false); // 👈 For toggling add form
-  const [selectedLead, setSelectedLead] = useState(null);
+  const [selectedLeadId, setSelectedLeadId] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedLead, setSelectedLead] = useState(null); // for convert to booking
+  const [editingLead, setEditingLead] = useState(null); // for editing
 
   const handleCloseLead = async (id) => {
     await closeLead(id);
@@ -71,11 +74,26 @@ const LeadList = () => {
                 Convert to Booking
               </button>
             </li>
+            <li>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setEditingLead(row);
+                  setShowAddForm(true);
+                }}
+              >
+                Edit Lead
+              </button>
+            </li>
           </ul>
         </div>
       ),
     },
   ];
+
+  const filteredLeads = data?.leads?.filter((lead) =>
+    JSON.stringify(lead).toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <div className="container mt-4">
@@ -83,15 +101,24 @@ const LeadList = () => {
         <h4>Manage Leads</h4>
         <button
           className="btn btn-primary"
-          onClick={() => setShowAddForm(!showAddForm)}
+          onClick={() => {
+            setEditingLead(null);
+            setShowAddForm(!showAddForm);
+          }}
         >
           {showAddForm ? "Hide Lead Form" : "Add Lead"}
         </button>
       </div>
 
-      {/* Show Add Lead Form if toggled */}
       {showAddForm && (
-        <LeadAddForm onClose={() => setShowAddForm(false)} refetch={refetch} />
+        <LeadAddForm
+          onClose={() => {
+            setShowAddForm(false);
+            setEditingLead(null);
+          }}
+          refetch={refetch}
+          editingLead={editingLead}
+        />
       )}
 
       {selectedLead && (
@@ -102,9 +129,27 @@ const LeadList = () => {
         />
       )}
 
-      <DataTable columns={columns} data={data?.leads || []} pagination />
+      <div className="mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search leads..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+      </div>
 
-      {/* Show Remarks Modal */}
+      <DataTable
+        columns={columns}
+        data={filteredLeads || []}
+        pagination
+        highlightOnHover
+        persistTableHead
+        noDataComponent="No leads found"
+      />
+
+      {/* <DataTable columns={columns} data={data?.leads || []} pagination /> */}
+
       {selectedLeadId && (
         <LeadRemarksModal
           leadId={selectedLeadId}

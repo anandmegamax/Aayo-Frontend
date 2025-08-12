@@ -5,6 +5,7 @@ import {
 } from "../../redux/api/flightApi";
 import { useGetFlightTypesQuery } from "../../redux/api/flightTypeApi";
 import toast from "react-hot-toast";
+import Select from "react-select";
 
 const FlightForm = ({ editingFlight, onSuccess }) => {
   const [form, setForm] = useState({
@@ -50,10 +51,34 @@ const FlightForm = ({ editingFlight, onSuccess }) => {
     }
   };
 
+  const flightTypeOptions = flightTypes?.flightTypes?.map((f) => ({
+    value: f._id,
+    label: f.name,
+  }));
+
   return (
     <form onSubmit={handleSubmit} className="border p-3 rounded mt-4">
       <h5>{editingFlight ? "Edit" : "Add"} Flight</h5>
-      <select
+
+      <Select
+        className="mb-2"
+        name="flightType"
+        options={flightTypeOptions}
+        value={
+          flightTypeOptions?.find((f) => f.value === form.flightType) || null
+        }
+        onChange={(selected) =>
+          setForm((prev) => ({
+            ...prev,
+            flightType: selected?.value || "",
+          }))
+        }
+        placeholder="Select Flight Type"
+        isClearable
+        isSearchable
+      />
+
+      {/* <select
         className="form-select mb-2"
         name="flightType"
         value={form.flightType}
@@ -66,7 +91,7 @@ const FlightForm = ({ editingFlight, onSuccess }) => {
             {f.name}
           </option>
         ))}
-      </select>
+      </select> */}
       <input
         type="text"
         name="from"
@@ -101,7 +126,7 @@ const FlightForm = ({ editingFlight, onSuccess }) => {
         onChange={handleChange}
         required
       />
-      <button className="btn btn-primary" type="submit">
+      <button className="btn btn-success" type="submit">
         {editingFlight ? "Update" : "Add"} Flight
       </button>
     </form>

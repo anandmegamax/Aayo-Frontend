@@ -1,73 +1,57 @@
 import React, { useState, useMemo } from "react";
-import {
-  useGetFlightTypesQuery,
-  useDeleteFlightTypeMutation,
-} from "../../redux/api/flightTypeApi";
-import FlightTypeForm from "./FlightTypeForm";
 import DataTable from "react-data-table-component";
+import {
+  useGetFlightCategoriesQuery,
+  useDeleteFlightCategoryMutation,
+} from "../../redux/api/flightCategoryApi";
+import FlightCategoryForm from "./FlightCategoryForm";
 import toast from "react-hot-toast";
 
-const FlightTypeList = () => {
-  const { data: flightTypes, isLoading, refetch } = useGetFlightTypesQuery();
-  const [deleteFlightType] = useDeleteFlightTypeMutation();
-  const [editingFlight, setEditingFlight] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+const FlightCategoryList = () => {
+  const { data, isLoading, refetch } = useGetFlightCategoriesQuery();
+  const [deleteCategory] = useDeleteFlightCategoryMutation();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
   const [searchText, setSearchText] = useState("");
 
+  const handleAdd = () => {
+    setEditData(null);
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = (row) => {
+    setEditData(row);
+    setIsFormOpen(true);
+  };
+
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this flight type?")) {
+    if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await deleteFlightType(id).unwrap();
-        toast.success("Flight type deleted");
+        await deleteCategory(id).unwrap();
+        toast.success("Flight Category deleted successfully");
         refetch();
       } catch (err) {
-        toast.error("Delete failed");
+        toast.error(err?.data?.message || "Delete failed");
       }
     }
   };
 
-  const handleEdit = (flight) => {
-    setEditingFlight(flight);
-    setShowForm(true);
-  };
-
   const columns = [
+    { name: "Name", selector: (row) => row.name, sortable: true },
     {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Capacity",
-      selector: (row) => row.capacity,
-      sortable: true,
-    },
-    {
-      name: "Max Speed",
-      selector: (row) => row.maxSpeed,
-      sortable: true,
-    },
-    {
-      name: "Description",
-      selector: (row) => row.description,
-    },
-    {
-      name: "Images",
+      name: "Image",
       cell: (row) =>
-        row.images?.map((img, idx) => (
+        row.image?.url ? (
           <img
-            key={idx}
-            src={img.url}
-            alt={`img-${idx}`}
-            width="40"
-            className="me-1"
+            src={row.image.url}
+            alt={row.name}
+            width="60"
+            height="40"
+            style={{ objectFit: "cover" }}
           />
-        )),
-    },
-    {
-      name: "Status",
-      selector: (row) => (row.status ? "Active" : "Inactive"),
-      sortable: true,
+        ) : (
+          "No Image"
+        ),
     },
     {
       name: "Actions",
@@ -103,31 +87,36 @@ const FlightTypeList = () => {
 
   // Search filter
   const filteredData = useMemo(() => {
-    if (!flightTypes?.flightTypes) return [];
-    return flightTypes.flightTypes.filter((flight) =>
-      flight.name.toLowerCase().includes(searchText.toLowerCase())
+    if (!data?.flightCategories) return [];
+    return data.flightCategories.filter((category) =>
+      category.name.toLowerCase().includes(searchText.toLowerCase())
     );
-  }, [flightTypes, searchText]);
+  }, [data, searchText]);
 
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4>Flight Type List</h4>
+        <h2>Flight Categories</h2>
+
         <button
           className="btn btn-primary"
           onClick={() => {
-            setShowForm(!showForm);
-            setEditingFlight(null);
+            setIsFormOpen(!isFormOpen);
+            setEditData(null);
           }}
         >
-          {showForm ? "Hide Form" : "Add Flight Type"}
+          {isFormOpen ? "Hide Form" : "Add Flight Category"}
         </button>
+
+        {/* <button onClick={handleAdd} className="btn btn-success">
+          Add Category
+        </button> */}
       </div>
 
-      {showForm && (
-        <FlightTypeForm
-          editingFlight={editingFlight}
-          setShowForm={setShowForm}
+      {isFormOpen && (
+        <FlightCategoryForm
+          editData={editData}
+          closeForm={() => setIsFormOpen(false)}
           refetch={refetch}
         />
       )}
@@ -145,8 +134,8 @@ const FlightTypeList = () => {
       <DataTable
         columns={columns}
         data={filteredData}
-        pagination
         progressPending={isLoading}
+        pagination
         highlightOnHover
         responsive
         striped
@@ -156,4 +145,4 @@ const FlightTypeList = () => {
   );
 };
 
-export default FlightTypeList;
+export default FlightCategoryList;

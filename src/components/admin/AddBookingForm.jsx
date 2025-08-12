@@ -6,6 +6,7 @@ import {
 import toast from "react-hot-toast";
 import { useGetUsersQuery } from "../../redux/api/adminApi";
 import { useGetFlightTypesQuery } from "../../redux/api/flightTypeApi";
+import Select from "react-select";
 
 const AddBookingForm = ({ setShowForm, refetch, booking }) => {
   const formRef = useRef(null);
@@ -18,7 +19,8 @@ const AddBookingForm = ({ setShowForm, refetch, booking }) => {
     flightType: "",
     status: "pending",
     remarks: "",
-    totalAmount: 0,
+    totalAmount: "",
+    bookingType: "normal",
   });
 
   useEffect(() => {
@@ -39,6 +41,7 @@ const AddBookingForm = ({ setShowForm, refetch, booking }) => {
         status: booking.status || "pending",
         remarks: booking.remarks || "",
         totalAmount: booking.totalAmount || 0,
+        bookingType: booking.bookingType || "normal",
       });
     }
   }, [booking]);
@@ -94,6 +97,16 @@ const AddBookingForm = ({ setShowForm, refetch, booking }) => {
     }
   };
 
+  const userOptions = users?.users?.map((u) => ({
+    value: u._id,
+    label: `${u.name} (${u.email})`,
+  }));
+
+  const flightOptions = flightTypes?.flightTypes?.map((f) => ({
+    value: f._id,
+    label: f.name + ` (${f.capacity} seats)`,
+  }));
+
   return (
     <form
       ref={formRef}
@@ -102,7 +115,24 @@ const AddBookingForm = ({ setShowForm, refetch, booking }) => {
     >
       <div className="row g-3">
         <div className="col-md-4">
-          <select
+          <Select
+            options={userOptions}
+            value={
+              userOptions?.find((option) => option.value === form.user) || null
+            }
+            onChange={(selected) =>
+              setForm((prev) => ({
+                ...prev,
+                user: selected?.value || "",
+              }))
+            }
+            placeholder="Select Traveler"
+            isClearable
+            isSearchable
+            required
+          />
+
+          {/* <select
             className="form-select"
             value={form.user}
             onChange={(e) => setForm({ ...form, user: e.target.value })}
@@ -114,7 +144,7 @@ const AddBookingForm = ({ setShowForm, refetch, booking }) => {
                 {u.name} ({u.email})
               </option>
             ))}
-          </select>
+          </select> */}
         </div>
 
         <div className="col-md-4">
@@ -157,7 +187,26 @@ const AddBookingForm = ({ setShowForm, refetch, booking }) => {
           />
         </div>
 
-        <div className="col-md-4">
+        <Select
+          className="col-md-4"
+          options={flightOptions}
+          value={
+            flightOptions?.find((option) => option.value === form.flightType) ||
+            null
+          }
+          onChange={(selected) =>
+            setForm((prev) => ({
+              ...prev,
+              flightType: selected?.value || "",
+            }))
+          }
+          placeholder="Select Flight Type"
+          isClearable
+          isSearchable
+          required
+        />
+
+        {/* <div className="col-md-4">
           <select
             className="form-select"
             value={form.flightType}
@@ -171,7 +220,7 @@ const AddBookingForm = ({ setShowForm, refetch, booking }) => {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         <div className="col-md-4">
           <input
@@ -194,7 +243,21 @@ const AddBookingForm = ({ setShowForm, refetch, booking }) => {
           />
         </div>
 
-        <div className="mb-3">
+        <div className="col-md-6">
+          <label>Booking Type</label>
+          <select
+            className="form-control"
+            name="bookingType"
+            value={form.bookingType}
+            onChange={(e) => setForm({ ...form, bookingType: e.target.value })}
+            required
+          >
+            <option value="normal">Normal Booking</option>
+            <option value="empty_legs">Empty Legs</option>
+          </select>
+        </div>
+
+        <div className="col-md-6">
           <label>Status</label>
           <select
             className="form-control"

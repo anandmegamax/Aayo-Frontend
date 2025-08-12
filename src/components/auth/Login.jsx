@@ -7,13 +7,10 @@ import { useSelector } from "react-redux";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
 
-  const [login, { isLoading, error, data }] = useLoginMutation();
+  const [login, { isLoading, error }] = useLoginMutation();
   const { isAuthenticated } = useSelector((state) => state.auth);
-
-  console.log(isAuthenticated);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -21,40 +18,46 @@ const Login = () => {
       navigate("/admin/dashboard");
     }
     if (error) {
-      toast.error(error?.data?.message);
+      toast.error(error?.data?.message || "Login failed");
     }
   }, [error, navigate, isAuthenticated]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    const loginData = {
-      email,
-      password,
-    };
-    login(loginData);
+    login({ email, password });
   };
-  return (
-    <>
-      <div className="align-items-center justify-content-center min-vh-100">
-        <div className="row justify-content-center">
-          <div className="col-10 col-lg-5">
-            <form
-              className="shadow rounded bg-body p-4"
-              onSubmit={submitHandler}
-            >
-              <h2 className="mb-4 text-center">Login</h2>
 
+  return (
+    <div className="container d-flex align-items-center justify-content-center min-vh-100">
+      <div className="col-12 col-sm-10 col-md-6 col-lg-4">
+        <div className="card shadow-lg border-0 rounded-4">
+          <div className="card-body p-4">
+            <div className="text-center mb-3">
+              <img
+                src="../assets/img/logo.png" // replace with your logo path
+                alt="Logo"
+                style={{
+                  width: "300px",
+                  height: "80px",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+            <h3 className="text-center mb-">Welcome Back 👋</h3>
+
+            <form onSubmit={submitHandler}>
               <div className="mb-3">
                 <label htmlFor="email_field" className="form-label">
-                  Email
+                  Email address
                 </label>
                 <input
                   type="email"
                   id="email_field"
-                  className="form-control"
-                  name="email"
+                  className="form-control form-control-lg"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
 
@@ -65,34 +68,42 @@ const Login = () => {
                 <input
                   type="password"
                   id="password_field"
-                  className="form-control"
-                  name="password"
+                  className="form-control form-control-lg"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
 
-              <a href="/password/forgot" className="float-end mb-4">
-                Forgot Password?
-              </a>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <Link
+                  to="/password/forgot"
+                  className="text-decoration-none small"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
 
               <button
-                id="login_button"
                 type="submit"
-                className="btn btn-primary w-100 py-2"
+                className="btn btn-primary btn-lg w-100"
                 disabled={isLoading}
               >
-                {isLoading ? "Authenticating..." : "LOGIN"}
+                {isLoading ? "Authenticating..." : "Login"}
               </button>
-
-              <div className="my-3 text-end">
-                <Link to="/register">New User?</Link>
-              </div>
             </form>
+
+            {/* <div className="text-center mt-3">
+              <span className="text-muted small">New here? </span>
+              <Link to="/register" className="text-decoration-none">
+                Create an account
+              </Link>
+            </div> */}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

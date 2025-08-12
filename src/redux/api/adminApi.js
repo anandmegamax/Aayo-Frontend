@@ -71,7 +71,13 @@ export const adminApi = createApi({
                 body: data,
             }),
         }),
+        deleteUser: builder.mutation({
+            query: (id) => ({
+                url: `/admin/user/${id}`,
+                method: "DELETE",
+            }),
+        }),
     })
 })
 
-export const { useGetUsersQuery, useUpdateUserRoleMutation, useGetRolesQuery, useCreateMenuMutation, useGetMenusQuery, useCreatePermissionMutation, useGetPermissionsQuery, useCreateRoleMutation, useUpdateRolePermissionsMutation, useUpdateUserDetailsMutation } = adminApi;
+export const { useGetUsersQuery, useUpdateUserRoleMutation, useGetRolesQuery, useCreateMenuMutation, useGetMenusQuery, useCreatePermissionMutation, useGetPermissionsQuery, useCreateRoleMutation, useUpdateRolePermissionsMutation, useUpdateUserDetailsMutation, useDeleteUserMutation } = adminApi;

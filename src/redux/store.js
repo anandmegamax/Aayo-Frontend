@@ -8,6 +8,8 @@ import { flightTypeApi } from "./api/flightTypeApi";
 import { airportApi } from "./api/airportApi";
 import { bookingApi } from "./api/bookingApi";
 import { leadApi } from "./api/leadApi";
+import { facilityApi } from "./api/facilityApi";
+import { flightCategoryApi } from "./api/flightCategoryApi";
 
 export const store = configureStore({
     reducer: {
@@ -20,7 +22,9 @@ export const store = configureStore({
         [airportApi.reducerPath]: airportApi.reducer,
         [bookingApi.reducerPath]: bookingApi.reducer,
         [leadApi.reducerPath]: leadApi.reducer,
+        [facilityApi.reducerPath]: facilityApi.reducer,
+        [flightCategoryApi.reducerPath]: flightCategoryApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat([authApi.middleware, userApi.middleware, adminApi.middleware, flightApi.middleware, flightTypeApi.middleware, airportApi.middleware, bookingApi.middleware, leadApi.middleware])
+        getDefaultMiddleware().concat([authApi.middleware, userApi.middleware, adminApi.middleware, flightApi.middleware, flightTypeApi.middleware, airportApi.middleware, bookingApi.middleware, leadApi.middleware, facilityApi.middleware, flightCategoryApi.middleware])
 })
